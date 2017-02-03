@@ -7,16 +7,18 @@ Welcome to Tosca!
    :maxdepth: 2
 
    started
-   intro
    semantic
-   syntax
    lexical
    tool
 
-The purpose of Tosca is to implement an extended higher-order rewriting formalism to facilitate writing compilers
-and other syntax-directed transformation systems, specifically:
+The purpose of Tosca is to facilitate writing compilers and other syntax-directed transformation systems,
+by providing:
 
-+ Special notations for using embedded syntax, even higher order abstract syntax.
-+ Special support for symbol tables, environments, and attributes, as used in compilers.
-+ A polymorphic sort system (which in practice means that Tosca systems are contraction schemes).
-+ Tosca systems can be compiled directly to native code (so far in C++ or Java) for effective execution.
+* a programming language with
+
+  * special notations for using embedded syntax, even higher order abstract syntax
+  * special support for symbol tables, environments, and attributes, as used in compilers
+  * a polymorphic type system
+
+* a compiler generating high-level, readable Java 8 or C++ code, for effective execution
+* a meta parser generator enabling concrete syntax pattern matching and correct instantiation
