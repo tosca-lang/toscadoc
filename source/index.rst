@@ -8,7 +8,10 @@ Welcome to Tosca!
 
    started
    intro
+   semantic
+   syntax
    lexical
+   tool
 
 The purpose of Tosca is to implement an extended higher-order rewriting formalism to facilitate writing compilers
 and other syntax-directed transformation systems, specifically:

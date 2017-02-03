@@ -1,41 +1,39 @@
-Language syntax
-***************
+Concrete syntax
+===============
 
-.. important::
-
-    Since CRSX 4. Previous CRSX uses a different syntax.
-
-Language syntax provides an alternative way to define enumerations using an EBNF notation.
+Concrete syntax provides an alternative way to define enumerations using an EBNF notation (currently based on ANTLR4).
 This is very useful in particular when dealing with language constructs.
+
+Overview
+--------
 
 For instance look at this typical constant declaration EBNF-like grammar definition::
 
    let : 'let' id '=' LITERAL
 
-where :code:`let` is a grammar rule definition, followed by the grammar rule elements. In CRSX, this is equivalent to the following enumeration::
+where :code:`let` is a grammar rule definition, followed by the grammar rule elements. This gets expanded to the following enumeration::
 
-   Let_Sort ::= ( Let[$String /* 'let' */, Id_Sort, $String /* '=' */, $String /* LITERAL */]; );
+   enum Let_sort | Let(Id_sort, String /* LITERAL */]
 
 While this can shorten enumeration definition, language syntax can also be used in pattern and contraction, for instance::
 
-   Compile[%let⟨ let #id = #LITERAL ⟩] → ...
+   Compile(let⟦ let #id = #LITERAL ⟧) → ...
 
-CRSX automatically generates a *meta parser* for each grammar rule, in this case :code:`let`.
-The meta parser statement :code:`%let⟨ code ⟩` indicates *code* follows the let meta syntax.
+The expression :code:`let⟦ code ⟧` indicates *code* follows the let *meta* syntax.
 
-The following sections semi-formally describe the language syntax feature.
+The following sections semi-formally describe the concreate syntax feature.
 
 Rules
 -----
 
-CRSX allows defining *grammar rule* as follows::
+Tosca allows defining *grammar rule* as follows::
 
    rulename : block ;
 
-For each grammar rule, CRSX generates an enumeration and a meta parser statement::
+For each grammar rule, Tosca generates an enumeration and a category::
 
-   Rulename_Sort ::= ( ... );
-   %rulename⟨ ...  ⟩
+   enum Rulename_sort | ...
+   rulename⟦ ... ⟧
 
 Alternatives
 ------------
@@ -46,7 +44,7 @@ A grammar rule consists of a set of *alternatives* separated by the '|' characte
 
 Each alternative corresponds to an enumeration value:::
 
-   Rulename_Sort ::= ( Rulename_A1[ ... ]; ... ;  Rulename_A2[ ... ];  );
+   enum Rulename_sort | Rulename_A1( ... ) | Rulename_A2( ... ) | ...
 
 when the rule contains only one alternative, the *_An* suffix is omitted.
 
@@ -66,7 +64,7 @@ Literals and tokens are always mapped to the :code:`$String` sort. Rule referenc
 Going back to the let example above, here how it looks:::
 
    let : 'let' id '=' LITERAL
-   Let_Sort ::= ( Let[$String /* 'let' literal */, Id_Sort <!-- rule reference -->, $String /* '=' literal */, $String <!-- token reference -->]; );
+   enum Let_sort |  Let(Id_sort /* rule reference */, String /* token reference */)
 
 In the case the alternative has no element, the generated constructor has no arguments.
 
@@ -79,13 +77,12 @@ For each rule and token declaration, there is a special grammar token used to ma
 
 By default, *META_CHAR* is the '#' character.::
 
-   Compile[ %let⟨ let #id = #LITERAL ⟩ ] → ...
+   Compile( let⟦ let #id = #LITERAL ⟧ ) → ...
 
  says to match any terms for the rule reference :code:`id` and for the token reference :code:`LITERAL`. This pattern is expanded to the following term::
 
-   Compile[ LET[#1, #id, #3, #LITERAL ] ] → ...
+   Compile( Let(#id, #LITERAL) ) → ...
 
-*#1* and *#3* both matches literals. They are kept around as they contains location information usefull for some applications, like pretty printers.
 
 Contraction
 ^^^^^^^^^^^
@@ -94,4 +91,4 @@ Each element, other than literals, can be constructed by arbitrary rewrites. Thi
 
 For instance::
 
-   Compile[ %let⟨ let #id = #LITERAL ⟩ ] → %local⟨ var ⟨id: #id⟩ := #LITERAL ⟩;
+   Compile( let⟦ let #id = #LITERAL ⟧ ) → local⟦ var ⟨id: #id⟩ := #LITERAL ⟧
